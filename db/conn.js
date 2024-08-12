@@ -1,10 +1,23 @@
 const mongoose = require("mongoose");
 
-const DB = process.env.MONGO_URI
+async function connectToDatabase() {
+  const databaseUri = process.env.MONGO_URI;
 
-mongoose.connect(DB,{
-    useUnifiedTopology:true,
-    useNewUrlParser:true
-}).then(()=> console.log("DataBase Connected")).catch((err)=>{
-    console.log(err);
-})
+  if (!databaseUri) {
+    console.error("MONGO_URI environment variable is not set.");
+    process.exit(1); // Exit the process with an error code
+  }
+
+  try {
+    await mongoose.connect(databaseUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Database connected successfully.");
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    process.exit(1); // Exit the process with an error code
+  }
+}
+
+connectToDatabase();
